@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人民币大写转换 | 工具箱</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .tool-page {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .tool-content {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .input-box {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 1rem;
+        }
+        .output-box {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 1rem;
+            background: #f9f9f9;
+            min-height: 60px;
+        }
+        .operate-btn {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .operate-btn:hover {
+            background: #2980b9;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="tool-page">
+    <a href="../index.html" class="back-btn">← 返回工具箱</a>
+    <div class="tool-content">
+        <h2>🔄️ 人民币大写转换</h2>
+        <p>输入数字金额，转换为人民币大写格式（支持整数和小数）</p>
+
+        <input type="number" class="input-box" id="rmbInput" placeholder="请输入数字金额，例如：1234.56">
+
+        <button class="operate-btn" id="tranBtn">转换为大写</button>
+
+        <h3>转换结果：</h3>
+        <div class="output-box" id="rmbOutput"></div>
+    </div>
+</div>
+
+<script>
+    // 人民币大写转换核心函数
+    function rmbToChinese(num) {
+        if (isNaN(num) || num < 0) return '请输入有效的非负数字！';
+
+        const digit = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
+        const unit = ['', '拾', '佰', '仟', '万', '拾', '佰', '仟', '亿', '拾', '佰', '仟'];
+        const decUnit = ['角', '分'];
+
+        // 分离整数和小数部分
+        const [integerPart, decimalPart] = num.toString().split('.');
+        let chinese = '';
+
+        // 处理整数部分
+        if (integerPart !== '0') {
+            for (let i = 0; i < integerPart.length; i++) {
+                const n = parseInt(integerPart[i]);
+                const pos = integerPart.length - 1 - i;
+                chinese += digit[n] + (n === 0 ? '' : unit[pos]);
+            }
+            chinese += '元';
+        } else {
+            chinese = '零元';
+        }
+
+        // 处理小数部分（角分）
+        if (decimalPart) {
+            const jiao = parseInt(decimalPart[0] || 0);
+            const fen = parseInt(decimalPart[1] || 0);
+            if (jiao !== 0) chinese += digit[jiao] + '角';
+            if (fen !== 0) chinese += digit[fen] + '分';
+            if (jiao === 0 && fen === 0) chinese += '整';
+        } else {
+            chinese += '整';
+        }
+
+        // 简化连续的零
+        return chinese.replace(/零+/g, '零').replace(/零元/, '元').replace(/零整/, '整');
+    }
+
+    // 绑定事件
+    document.getElementById('tranBtn').addEventListener('click', () => {
+        const input = document.getElementById('rmbInput').value;
+        if (!input) {
+            alert('请输入数字金额！');
+            return;
+        }
+        const result = rmbToChinese(parseFloat(input));
+        document.getElementById('rmbOutput').textContent = result;
+    });
+</script>
+</body>
+</html>

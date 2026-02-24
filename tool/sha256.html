@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHA256加密 | 工具箱</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* 工具页面专属样式 */
+        .tool-page {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .tool-content {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .input-area, .output-area {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 1rem 0;
+            min-height: 120px;
+            font-size: 1rem;
+        }
+        .operate-btn {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+        .operate-btn:hover {
+            background: #2980b9;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="tool-page">
+    <a href="../index.html" class="back-btn">← 返回工具箱</a>
+    <div class="tool-content">
+        <h2>🔒 SHA256加密工具</h2>
+        <p>输入需要加密的文本，点击加密按钮即可生成SHA256哈希值</p>
+
+        <textarea class="input-area" id="inputText" placeholder="请输入需要加密的文本..."></textarea>
+
+        <button class="operate-btn" id="encryptBtn">执行SHA256加密</button>
+        <button class="operate-btn" id="clearBtn">清空内容</button>
+
+        <h3>加密结果：</h3>
+        <textarea class="output-area" id="outputText" readonly placeholder="加密后的SHA256值将显示在这里..."></textarea>
+    </div>
+</div>
+
+<script>
+    // SHA256加密核心逻辑（浏览器原生API）
+    async function sha256Encrypt(text) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        // 转换为十六进制字符串
+        return Array.from(new Uint8Array(hash))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+    }
+
+    // 绑定事件
+    document.getElementById('encryptBtn').addEventListener('click', async () => {
+        const input = document.getElementById('inputText').value.trim();
+        if (!input) {
+            alert('请输入需要加密的文本！');
+            return;
+        }
+        const result = await sha256Encrypt(input);
+        document.getElementById('outputText').value = result;
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        document.getElementById('inputText').value = '';
+        document.getElementById('outputText').value = '';
+    });
+</script>
+</body>
+</html>
